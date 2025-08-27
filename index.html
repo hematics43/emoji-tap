@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Emoji Tap — Real-time</title>
+  <style>
+    :root{
+      --bg1:#071029; --bg2:#0f1724; --card: rgba(255,255,255,0.03);
+      --text:#e6eef8; --muted:#98a3bd;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      padding:28px;color:var(--text);
+    }
+    .wrap{
+      width:100%;max-width:940px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.08));
+      border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);
+    }
+    header{display:flex;align-items:baseline;gap:12px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:4px 0 18px;color:var(--muted)}
+    .grid{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{
+      background:var(--card);border:1px solid rgba(255,255,255,0.04);padding:14px 18px;border-radius:12px;
+      min-width:100px;display:flex;align-items:center;gap:10px;cursor:pointer;position:relative;user-select:none;
+      transition:transform .14s cubic-bezier(.2,.9,.2,1);
+      font-weight:700;color:var(--text);
+    }
+    .btn:active{ transform: translateY(1px) scale(.98) }
+    .emoji{ font-size:26px; display:inline-block;transform-origin:center; transition:transform .16s; }
+    .btn.tapping .emoji{ transform: scale(1.35) rotate(-8deg); }
+    .count{ font-size:14px;color:var(--muted) }
+    .burst{
+      position:absolute;right:10px;top:8px;width:10px;height:10px;border-radius:999px;
+      background: linear-gradient(90deg,#ffd166,#ff6b6b); box-shadow:0 6px 18px rgba(255,107,107,0.18);
+      animation:pop .9s ease; pointer-events:none;
+    }
+    @keyframes pop {
+      0%{transform:scale(.2);opacity:0}20%{transform:scale(1.4);opacity:1}100%{transform:scale(1);opacity:0}
+    }
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    .status{float:right;color:var(--muted);font-size:13px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Emoji Tap</h1>
+      <div class="status" id="status">connecting…</div>
+    </header>
+    <p class="lead">Tap an emoji — updates propagate to all users in realtime.</p>
+
+    <div class="grid" id="grid" aria-live="polite"></div>
+
+    <footer>
+      <div>Replace firebaseConfig with your Firebase project keys. Demo rules only.</div>
+    </footer>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ======= CONFIG: replace with your Firebase web app config =======
+    // Import the functions you need from the SDKs you need
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCdGFBx1v5vg-3zeS1e6o_dFGbAwRTPpy4",
+  authDomain: "emoji-tap-demo.firebaseapp.com",
+  projectId: "emoji-tap-demo",
+  storageBucket: "emoji-tap-demo.firebasestorage.app",
+  messagingSenderId: "543784610589",
+  appId: "1:543784610589:web:b89f72234ef4379b134ff4"
+};
+
+    // ==================================================================
+
+    // Expanded emoji set
+    const EMOJIS = [
+      "👍","❤️","😂","🔥","👏","🎉","😮","🤝",
+      "🥳","🤩","💯","😎","🙌","🤖","🌟","🚀"
+    ];
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const grid = document.getElementById('grid');
+    const status = document.getElementById('status');
+    const emojiState = {};
+
+    const docId = (emoji) => encodeURIComponent(emoji);
+
+    function renderButtons() {
+      grid.innerHTML = '';
+      EMOJIS.forEach(e => {
+        const state = emojiState[e] || { count: 0, justTapped: false };
+        const btn = document.createElement('button');
+        btn.className = 'btn' + (state.justTapped ? ' tapping' : '');
+        btn.innerHTML = `<span class="emoji">${e}</span><span class="count">${state.count ?? 0}</span>`;
+        btn.addEventListener('click', () => handleTap(e));
+        if (state.justTapped) {
+          const b = document.createElement('span'); b.className = 'burst';
+          btn.appendChild(b);
+        }
+        grid.appendChild(btn);
+      });
+    }
+
+    async function handleTap(emoji) {
+      const prev = (emojiState[emoji]?.count) ?? 0;
+      setLocalCount(emoji, prev + 1, true);
+
+      const ref = db.collection('emojiTaps').doc(docId(emoji));
+      try {
+        await db.runTransaction(async (tx) => {
+          const snap = await tx.get(ref);
+          if (!snap.exists) {
+            tx.set(ref, { count: 1, lastTappedAt: firebase.firestore.FieldValue.serverTimestamp() });
+            return;
+          }
+          const current = snap.data().count ?? 0;
+          tx.update(ref, { count: current + 1, lastTappedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        });
+      } catch (err) {
+        console.error('Transaction failed', err);
+        // rollback optimistic update silently (no popup)
+        const now = (emojiState[emoji]?.count) ?? 1;
+        setLocalCount(emoji, Math.max(now - 1, 0), false);
+      }
+    }
+
+    function setLocalCount(emoji, count, justTapped) {
+      if (emojiState[emoji]?.timer) clearTimeout(emojiState[emoji].timer);
+      emojiState[emoji] = { count, justTapped };
+      if (justTapped) {
+        emojiState[emoji].timer = setTimeout(() => {
+          emojiState[emoji].justTapped = false;
+          renderButtons();
+        }, 2500);
+      }
+      renderButtons();
+    }
+
+    function attachListeners() {
+      EMOJIS.forEach((e) => {
+        const ref = db.collection('emojiTaps').doc(docId(e));
+        ref.get().then(snap => {
+          if (!snap.exists) {
+            ref.set({ count: 0, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+          }
+        });
+
+        ref.onSnapshot(snap => {
+          if (!snap.exists) return;
+          const data = snap.data();
+          const remoteCount = data.count ?? 0;
+          const justTapped = data.lastTappedAt && (Date.now() - data.lastTappedAt.toMillis() < 2500);
+          const localCount = emojiState[e]?.count ?? 0;
+          if (remoteCount >= localCount) {
+            setLocalCount(e, remoteCount, justTapped);
+          }
+          status.textContent = 'online';
+        }, () => status.textContent = 'offline');
+      });
+    }
+
+    EMOJIS.forEach(e => { emojiState[e] = { count: 0, justTapped: false }; });
+    renderButtons();
+    attachListeners();
+  </script>
+</body>
+</html>
