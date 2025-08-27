@@ -3,143 +3,86 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Emoji Tap — Real-time</title>
+  <title>🤩Emoji Tap — Real-time</title>
   <style>
-    :root {
-      --bg1: #1e003e; 
-      --bg2: #0a0a2a; 
-      --card: rgba(255,255,255,0.08);
-      --text: #ffffff; 
-      --muted: #c4c8d9;
+    :root{
+      --bg1:#080901; --bg2:#0f1724; --card: rgba(255,255,255,0.03);
+      --text:#e6eef8; --muted:#98a3bd;
     }
-
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0; padding: 0; height: 100%;
-      font-family: 'Inter', system-ui, Segoe UI, Roboto, Arial;
-      -webkit-tap-highlight-color: transparent;
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+    body{
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,var(--bg1),var(--bg2));
+      padding:28px;color:var(--text);
     }
-
-    body {
-      display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(160deg,var(--bg1),var(--bg2));
-      padding: 20px; color: var(--text);
+    .wrap{
+      width:100%;max-width:940px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.08));
+      border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);
     }
-
-    .wrap {
-      width: 100%; max-width: 960px;
-      background: linear-gradient(180deg,rgba(255,255,255,0.05),rgba(0,0,0,0.15));
-      border-radius: 16px; padding: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    header{display:flex;align-items:baseline;gap:12px}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:4px 0 18px;color:var(--muted)}
+    .grid{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{
+      background:var(--card);border:1px solid rgba(174, 165, 165, 0.04);padding:14px 18px;border-radius:12px;
+      min-width:100px;display:flex;align-items:center;gap:10px;cursor:pointer;position:relative;user-select:none;
+      transition:transform .14s cubic-bezier(.2,.9,.2,1);
+      font-weight:700;color:var(--text);
     }
-
-    header {
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 6px;
+    .btn:active{ transform: translateY(1px) scale(.98) }
+    .emoji{ font-size:26px; display:inline-block;transform-origin:center; transition:transform .16s; }
+    .btn.tapping .emoji{ transform: scale(1.35) rotate(-8deg); }
+    .count{ font-size:14px;color:var(--muted) }
+    .burst{
+      position:absolute;right:10px;top:8px;width:10px;height:10px;border-radius:999px;
+      background: linear-gradient(90deg,#ffd166,#ff6b6b); box-shadow:0 6px 18px rgba(255,107,107,0.18);
+      animation:pop .9s ease; pointer-events:none;
     }
-    h1 { margin: 0; font-size: 22px; font-weight: 700; }
-    .status { font-size: 13px; color: var(--muted); }
-
-    p.lead {
-      margin: 8px 0 20px; font-size: 15px; color: var(--muted);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(120px,1fr));
-      gap: 14px;
-    }
-
-    .btn {
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 14px;
-      border-radius: 14px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; position: relative;
-      user-select: none; transition: transform .15s;
-      font-weight: 700; color: var(--text);
-    }
-
-    .btn:active { transform: scale(.96); }
-
-    .emoji { font-size: 32px; line-height: 1; transition: transform .18s; }
-    .btn.tapping .emoji { transform: scale(1.35) rotate(-6deg); }
-
-    .count { font-size: 15px; margin-top: 6px; color: var(--muted); }
-
-    .burst {
-      position: absolute; right: 10px; top: 8px;
-      width: 12px; height: 12px; border-radius: 50%;
-      background: radial-gradient(circle,#ff9d76,#ff6b6b);
-      animation: pop .9s ease; pointer-events:none;
-    }
-
     @keyframes pop {
-      0%{transform:scale(.2);opacity:0}
-      20%{transform:scale(1.4);opacity:1}
-      100%{transform:scale(1);opacity:0}
+      0%{transform:scale(.2);opacity:0}20%{transform:scale(1.4);opacity:1}100%{transform:scale(1);opacity:0}
     }
-
-    footer {
-      margin-top: 20px;
-      font-size: 13px; text-align: center; color: var(--muted);
-    }
-
-    /* Mobile tweaks */
-    @media (max-width: 600px) {
-      h1 { font-size: 18px; }
-      .emoji { font-size: 26px; }
-      .btn { min-width: 90px; padding: 12px; }
-    }
+    footer{margin-top:18px;color:var(--muted);font-size:13px}
+    .status{float:right;color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>Emoji Tap</h1>
+      <h1>🤩Emoji Tap</h1>
       <div class="status" id="status">connecting…</div>
     </header>
-    <p class="lead">Tap an emoji — see live reactions update instantly.</p>
+    <p class="lead">Tap an emoji — updates propagate to all users in realtime.</p>
 
     <div class="grid" id="grid" aria-live="polite"></div>
 
-    <footer>
-      🚀 Built with Firebase Realtime Firestore • Replace with your config
-    </footer>
+    
   </div>
 
-  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
   <script>
-    // ======= CONFIG: Replace with your Firebase config =======
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    // ========================================================
+    // ======= CONFIG: replace with your Firebase web app config =======
+    // Import the functions you need from the SDKs you need
 
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCdGFBx1v5vg-3zeS1e6o_dFGbAwRTPpy4",
+  authDomain: "emoji-tap-demo.firebaseapp.com",
+  projectId: "emoji-tap-demo",
+  storageBucket: "emoji-tap-demo.firebasestorage.app",
+  messagingSenderId: "543784610589",
+  appId: "1:543784610589:web:b89f72234ef4379b134ff4"
+};
+
+    // ==================================================================
+
+    // Expanded emoji set
     const EMOJIS = [
-  // Positive Reactions
-  "👍","❤️","😂","🔥","👏","🎉","😮","🤝",
-  "🥳","🤩","💯","😎","🙌","🤖","🌟","🚀",
-  // Emotions
-  "😊","😍","😘","🤗","😅","😢","😭","😡",
-  "😇","😉","🤔","😴","🥱","😜","🤯","🤪",
-  // Symbols
-  "✅","❌","⚡","✨","💡","🎯","📌","📢",
-  "🕒","📅","🏆","💎","🔑","❤️‍🔥","☀️","🌙",
-  // Animals & Nature
-  "🐶","🐱","🦁","🐵","🐼","🐸","🦄","🐢",
-  "🌸","🌍","🌈","🌊","🔥","❄️","🍀","🌻",
-];
-
+      "👍","❤️","😂","🔥","👏","🎉","😮","🤝",
+      "🥳","🤩","💯","😎","🙌","🤖","🌟","🚀"
+    ];
 
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
@@ -147,6 +90,7 @@
     const grid = document.getElementById('grid');
     const status = document.getElementById('status');
     const emojiState = {};
+
     const docId = (emoji) => encodeURIComponent(emoji);
 
     function renderButtons() {
@@ -182,6 +126,7 @@
         });
       } catch (err) {
         console.error('Transaction failed', err);
+        // rollback optimistic update silently (no popup)
         const now = (emojiState[emoji]?.count) ?? 1;
         setLocalCount(emoji, Math.max(now - 1, 0), false);
       }
@@ -194,7 +139,7 @@
         emojiState[emoji].timer = setTimeout(() => {
           emojiState[emoji].justTapped = false;
           renderButtons();
-        }, 2000);
+        }, 2500);
       }
       renderButtons();
     }
@@ -212,7 +157,7 @@
           if (!snap.exists) return;
           const data = snap.data();
           const remoteCount = data.count ?? 0;
-          const justTapped = data.lastTappedAt && (Date.now() - data.lastTappedAt.toMillis() < 2000);
+          const justTapped = data.lastTappedAt && (Date.now() - data.lastTappedAt.toMillis() < 2500);
           const localCount = emojiState[e]?.count ?? 0;
           if (remoteCount >= localCount) {
             setLocalCount(e, remoteCount, justTapped);
