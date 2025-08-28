@@ -2,86 +2,137 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>🤩Emoji Tap — Real-time</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <title>😂 Emoji Tap Party</title>
   <style>
-    :root{
-      --bg1:#080901; --bg2:#0f1724; --card: rgba(255,255,255,0.03);
-      --text:#e6eef8; --muted:#98a3bd;
+    :root {
+      --bg1: #1a0f29; --bg2: #240f1f;
+      --card: rgba(255, 255, 255, 0.05);
+      --text: #fefefe; --muted: #c8b9d9;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
-    body{
-      display:flex;align-items:center;justify-content:center;
-      background:linear-gradient(180deg,var(--bg1),var(--bg2));
-      padding:28px;color:var(--text);
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; font-family: "Comic Sans MS", cursive, system-ui; }
+    body {
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(180deg, var(--bg1), var(--bg2));
+      padding: 12px; color: var(--text);
     }
-    .wrap{
-      width:100%;max-width:940px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(0,0,0,0.08));
-      border-radius:14px;padding:28px;box-shadow:0 10px 30px rgba(2,6,23,0.6);
+    .wrap {
+      width: 100%; max-width: 960px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.15));
+      border-radius: 16px; padding: 20px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     }
-    header{display:flex;align-items:baseline;gap:12px}
-    h1{margin:0;font-size:20px}
-    p.lead{margin:4px 0 18px;color:var(--muted)}
-    .grid{display:flex;gap:12px;flex-wrap:wrap}
-    .btn{
-      background:var(--card);border:1px solid rgba(174, 165, 165, 0.04);padding:14px 18px;border-radius:12px;
-      min-width:100px;display:flex;align-items:center;gap:10px;cursor:pointer;position:relative;user-select:none;
-      transition:transform .14s cubic-bezier(.2,.9,.2,1);
-      font-weight:700;color:var(--text);
+    header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
+    h1 { margin: 0; font-size: clamp(20px, 5vw, 28px); letter-spacing: 1px; }
+    p.lead { margin: 6px 0 16px; color: var(--muted); font-style: italic; font-size: clamp(14px, 3vw, 16px); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 10px;
+      justify-content: center;
     }
-    .btn:active{ transform: translateY(1px) scale(.98) }
-    .emoji{ font-size:26px; display:inline-block;transform-origin:center; transition:transform .16s; }
-    .btn.tapping .emoji{ transform: scale(1.35) rotate(-8deg); }
-    .count{ font-size:14px;color:var(--muted) }
-    .burst{
-      position:absolute;right:10px;top:8px;width:10px;height:10px;border-radius:999px;
-      background: linear-gradient(90deg,#ffd166,#ff6b6b); box-shadow:0 6px 18px rgba(255,107,107,0.18);
-      animation:pop .9s ease; pointer-events:none;
+    .btn {
+      background: var(--card);
+      border: 2px dashed rgba(255,255,255,0.12);
+      padding: 14px; border-radius: 14px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; user-select: none;
+      transition: transform .2s cubic-bezier(.2,1.4,.2,1);
+      font-weight: 700; color: var(--text);
+      text-align: center;
+      min-height: 70px;
+    }
+    .btn:hover { transform: rotate(-2deg) scale(1.05); }
+    .btn:active { transform: rotate(2deg) scale(.95); }
+    .emoji { font-size: clamp(26px, 8vw, 40px); transition: transform .16s; }
+    .btn.tapping .emoji { transform: scale(1.5) rotate(calc(var(--rand, 15deg))); }
+    .count { font-size: clamp(12px, 3vw, 14px); color: var(--muted); margin-top: 4px; }
+    .burst {
+      position: absolute; right: 10px; top: 8px; width: 14px; height: 14px; border-radius: 50%;
+      background: radial-gradient(circle, #fffd87, #ff65a3, #7afcff);
+      box-shadow: 0 8px 22px rgba(255,255,255,0.25);
+      animation: pop .9s ease; pointer-events: none;
     }
     @keyframes pop {
-      0%{transform:scale(.2);opacity:0}20%{transform:scale(1.4);opacity:1}100%{transform:scale(1);opacity:0}
+      0% { transform: scale(.2) rotate(0); opacity: 0; }
+      30% { transform: scale(1.6) rotate(180deg); opacity: 1; }
+      100% { transform: scale(1) rotate(720deg); opacity: 0; }
     }
-    footer{margin-top:18px;color:var(--muted);font-size:13px}
-    .status{float:right;color:var(--muted);font-size:13px}
+    .status { margin-left: auto; font-size: clamp(12px, 3vw, 14px); color: #fffd87; font-weight: bold; }
+    footer {
+      margin-top: 20px; text-align: center;
+      display: flex; flex-direction: column; gap: 12px; align-items: center;
+    }
+    .clear-btn {
+      background: #ff65a3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+    .clear-btn:hover { transform: scale(1.05); background: #ff4081; }
+    .clear-btn:active { transform: scale(0.95); }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <h1>🤩Emoji Tap</h1>
+      <h1>😂 Emoji Tap Party</h1>
       <div class="status" id="status">connecting…</div>
     </header>
-    <p class="lead">Tap an emoji — updates propagate to all users in realtime.</p>
-
+    <p class="lead"></p>
     <div class="grid" id="grid" aria-live="polite"></div>
-
-    
+    <footer>
+      <button class="clear-btn" id="clearBtn">🧹 Clear Party</button>
+      <div>jUST TAP & SHOW EXPRESSIONS</div>
+    </footer>
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
   <script>
-    // ======= CONFIG: replace with your Firebase web app config =======
-    // Import the functions you need from the SDKs you need
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCdGFBx1v5vg-3zeS1e6o_dFGbAwRTPpy4",
+      authDomain: "emoji-tap-demo.firebaseapp.com",
+      projectId: "emoji-tap-demo",
+      storageBucket: "emoji-tap-demo.firebasestorage.app",
+      messagingSenderId: "543784610589",
+      appId: "1:543784610589:web:b89f72234ef4379b134ff4"
+    };
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCdGFBx1v5vg-3zeS1e6o_dFGbAwRTPpy4",
-  authDomain: "emoji-tap-demo.firebaseapp.com",
-  projectId: "emoji-tap-demo",
-  storageBucket: "emoji-tap-demo.firebasestorage.app",
-  messagingSenderId: "543784610589",
-  appId: "1:543784610589:web:b89f72234ef4379b134ff4"
-};
-
-    // ==================================================================
-
-    // Expanded emoji set
+    // 🎉 Expanded Emoji Set (96 emojis)
     const EMOJIS = [
-      "👍","❤️","😂","🔥","👏","🎉","😮","🤝",
-      "🥳","🤩","💯","😎","🙌","🤖","🌟","🚀"
+      // 🤝 Social & Fun
+      "👍","👏","🙌","💯","❤️","💖","💘","💋",
+      "🤝","👊","✌️","🤟","🤌","🫶","🙏","😮",
+      
+      // 😂 Funny Faces & Reactions
+      "😂","🤣","😜","🤡","👽","💩","🤔","🥴",
+      "🤯","🥸","🙃","😎","🤖","😺","🙀","👀",
+
+      // 🎉 Party & Fun
+      "🥳","🎉","🎊","🎂","🍰","🍩","🍭","🍕",
+      "🍔","🍟","🌭","🌮","🍿","🍫","🍷","🍺",
+
+      // 🐵 Animals & Silly Creatures
+      "🦄","🦖","🐸","🐵","🐧","🐢","🐙","🦊",
+      "🦕","🦆","🦋","🐝","🐼","🐨","🐯","🐶",
+
+      // 🌍 Nature & Weather
+      "🌈","🌍","🌎","🌏","☀️","🌙","⭐","⚡",
+      "🔥","💧","❄️","🌪️","🌸","🌻","🍀","🌊",
+
+      // 🚀 Random Cool Stuff
+      "🚀","🛸","🚁","✈️","🚗","🏎️","🛹","🎮",
+      "🎧","🎤","📸","🎬","💡","🎯","📱","💎"
+      
     ];
 
     const app = firebase.initializeApp(firebaseConfig);
@@ -89,7 +140,9 @@ const firebaseConfig = {
 
     const grid = document.getElementById('grid');
     const status = document.getElementById('status');
+    const clearBtn = document.getElementById('clearBtn');
     const emojiState = {};
+    const funnyStatus = ["online 😂", "connected 🤡", "party mode 🥳", "vibing 🌈"];
 
     const docId = (emoji) => encodeURIComponent(emoji);
 
@@ -99,6 +152,7 @@ const firebaseConfig = {
         const state = emojiState[e] || { count: 0, justTapped: false };
         const btn = document.createElement('button');
         btn.className = 'btn' + (state.justTapped ? ' tapping' : '');
+        btn.style.setProperty('--rand', (Math.random()*40-20)+"deg");
         btn.innerHTML = `<span class="emoji">${e}</span><span class="count">${state.count ?? 0}</span>`;
         btn.addEventListener('click', () => handleTap(e));
         if (state.justTapped) {
@@ -126,7 +180,6 @@ const firebaseConfig = {
         });
       } catch (err) {
         console.error('Transaction failed', err);
-        // rollback optimistic update silently (no popup)
         const now = (emojiState[emoji]?.count) ?? 1;
         setLocalCount(emoji, Math.max(now - 1, 0), false);
       }
@@ -139,7 +192,7 @@ const firebaseConfig = {
         emojiState[emoji].timer = setTimeout(() => {
           emojiState[emoji].justTapped = false;
           renderButtons();
-        }, 2500);
+        }, 2000);
       }
       renderButtons();
     }
@@ -157,15 +210,27 @@ const firebaseConfig = {
           if (!snap.exists) return;
           const data = snap.data();
           const remoteCount = data.count ?? 0;
-          const justTapped = data.lastTappedAt && (Date.now() - data.lastTappedAt.toMillis() < 2500);
+          const justTapped = data.lastTappedAt && (Date.now() - data.lastTappedAt.toMillis() < 2000);
           const localCount = emojiState[e]?.count ?? 0;
           if (remoteCount >= localCount) {
             setLocalCount(e, remoteCount, justTapped);
           }
-          status.textContent = 'online';
-        }, () => status.textContent = 'offline');
+          status.textContent = funnyStatus[Math.floor(Math.random()*funnyStatus.length)];
+        }, () => status.textContent = 'offline 😭');
       });
     }
+
+    // 🧹 Clear button logic
+    clearBtn.addEventListener('click', async () => {
+      if (!confirm("🧹 Are you sure? This will reset the party!")) return;
+      for (const e of EMOJIS) {
+        const ref = db.collection('emojiTaps').doc(docId(e));
+        await ref.set({ count: 0, lastTappedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        emojiState[e] = { count: 0, justTapped: false };
+      }
+      renderButtons();
+      status.textContent = "Party cleaned 🧹😂";
+    });
 
     EMOJIS.forEach(e => { emojiState[e] = { count: 0, justTapped: false }; });
     renderButtons();
