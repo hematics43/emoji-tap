@@ -7,97 +7,96 @@
   <style>
     :root {
       --bg1: #1a0f29; --bg2: #240f1f;
-      --card: rgba(255, 255, 255, 0.05);
+      --card: rgba(255, 255, 255, 0.08);
       --text: #fefefe; --muted: #c8b9d9;
     }
     * { box-sizing: border-box; }
-    html, body { height: 100%; margin: 0; font-family: "Comic Sans MS", cursive, system-ui; }
+    html, body { height: 100%; margin: 0; font-family: system-ui, sans-serif; }
     body {
-      display: flex; align-items: center; justify-content: center;
+      display: flex; flex-direction: column;
       background: linear-gradient(180deg, var(--bg1), var(--bg2));
-      padding: 12px; color: var(--text);
+      color: var(--text);
     }
-    .wrap {
-      width: 100%; max-width: 960px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(0,0,0,0.15));
-      border-radius: 16px; padding: 20px;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: linear-gradient(180deg, rgba(0,0,0,0.7), rgba(0,0,0,0));
+      padding: 10px 14px;
+      display: flex; align-items: center; justify-content: space-between;
     }
-    header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
-    h1 { margin: 0; font-size: clamp(20px, 5vw, 28px); letter-spacing: 1px; }
-    p.lead { margin: 6px 0 16px; color: var(--muted); font-style: italic; font-size: clamp(14px, 3vw, 16px); }
+    h1 { margin: 0; font-size: clamp(18px, 5vw, 24px); }
+    .status { font-size: clamp(12px, 4vw, 14px); color: #fffd87; }
+    .lead { padding: 6px 14px; font-size: clamp(14px, 4vw, 16px); color: var(--muted); }
+
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-      gap: 10px;
-      justify-content: center;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      gap: 8px;
+      padding: 10px;
+      flex: 1;
+      overflow-y: auto;
     }
     .btn {
       background: var(--card);
       border: 2px dashed rgba(255,255,255,0.12);
-      padding: 14px; border-radius: 14px;
+      border-radius: 14px;
+      padding: 10px;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       cursor: pointer; user-select: none;
-      transition: transform .2s cubic-bezier(.2,1.4,.2,1);
-      font-weight: 700; color: var(--text);
+      transition: transform .15s ease;
       text-align: center;
       min-height: 70px;
     }
-    .btn:hover { transform: rotate(-2deg) scale(1.05); }
-    .btn:active { transform: rotate(2deg) scale(.95); }
-    .emoji { font-size: clamp(26px, 8vw, 40px); transition: transform .16s; }
-    .btn.tapping .emoji { transform: scale(1.5) rotate(calc(var(--rand, 15deg))); }
-    .count { font-size: clamp(12px, 3vw, 14px); color: var(--muted); margin-top: 4px; }
+    .btn:active { transform: scale(.92); }
+    .emoji { font-size: clamp(28px, 9vw, 40px); }
+    .count { font-size: clamp(12px, 3.5vw, 14px); color: var(--muted); margin-top: 4px; }
+    .btn.tapping .emoji { transform: scale(1.4) rotate(calc(var(--rand, 15deg))); }
+
     .burst {
       position: absolute; right: 10px; top: 8px; width: 14px; height: 14px; border-radius: 50%;
       background: radial-gradient(circle, #fffd87, #ff65a3, #7afcff);
-      box-shadow: 0 8px 22px rgba(255,255,255,0.25);
       animation: pop .9s ease; pointer-events: none;
     }
     @keyframes pop {
-      0% { transform: scale(.2) rotate(0); opacity: 0; }
-      30% { transform: scale(1.6) rotate(180deg); opacity: 1; }
-      100% { transform: scale(1) rotate(720deg); opacity: 0; }
+      0% { transform: scale(.2); opacity: 0; }
+      30% { transform: scale(1.6); opacity: 1; }
+      100% { transform: scale(1); opacity: 0; }
     }
-    .status { margin-left: auto; font-size: clamp(12px, 3vw, 14px); color: #fffd87; font-weight: bold; }
+
     footer {
-      margin-top: 20px; text-align: center;
-      display: flex; flex-direction: column; gap: 12px; align-items: center;
+      position: sticky; bottom: 0; z-index: 10;
+      background: linear-gradient(0deg, rgba(0,0,0,0.7), rgba(0,0,0,0));
+      padding: 12px;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
     }
     .clear-btn {
-      background: #ff65a3;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform .2s ease, background .2s ease;
+      background: #ff65a3; color: white;
+      border: none; padding: 12px 24px;
+      border-radius: 12px; font-size: clamp(14px, 4vw, 16px);
+      font-weight: bold; cursor: pointer;
+      transition: transform .2s, background .2s;
     }
-    .clear-btn:hover { transform: scale(1.05); background: #ff4081; }
-    .clear-btn:active { transform: scale(0.95); }
+    .clear-btn:active { transform: scale(.95); }
+    .note { font-size: clamp(12px, 3.5vw, 14px); color: var(--muted); text-align: center; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>😂 Emoji Tap Party</h1>
-      <div class="status" id="status">connecting…</div>
-    </header>
-    <p class="lead"></p>
-    <div class="grid" id="grid" aria-live="polite"></div>
-    <footer>
-      <button class="clear-btn" id="clearBtn">🧹 Clear Party</button>
-      <div>jUST TAP & SHOW EXPRESSIONS</div>
-    </footer>
-  </div>
+  <header>
+    <h1>😂 Emoji Tap</h1>
+    <div class="status" id="status">connecting…</div>
+  </header>
+  
+  <div class="grid" id="grid" aria-live="polite"></div>
+  <footer>
+    <button class="clear-btn" id="clearBtn">🧹 Clear Party</button>
+    <div class="note">      <div>JUST TAP & SHOW EXPRESSIONS</div>
+</div>
+  </footer>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
   <script>
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyCdGFBx1v5vg-3zeS1e6o_dFGbAwRTPpy4",
       authDomain: "emoji-tap-demo.firebaseapp.com",
@@ -107,8 +106,7 @@
       appId: "1:543784610589:web:b89f72234ef4379b134ff4"
     };
 
-    // 🎉 Expanded Emoji Set (96 emojis)
-    const EMOJIS = [
+     const EMOJIS = [
       // 🤝 Social & Fun
       "👍","👏","🙌","💯","❤️","💖","💘","💋",
       "🤝","👊","✌️","🤟","🤌","🫶","🙏","😮",
@@ -220,9 +218,8 @@
       });
     }
 
-    // 🧹 Clear button logic
     clearBtn.addEventListener('click', async () => {
-      if (!confirm("🧹 Are you sure? This will reset the party!")) return;
+      if (!confirm("🧹 Reset all emoji counts?")) return;
       for (const e of EMOJIS) {
         const ref = db.collection('emojiTaps').doc(docId(e));
         await ref.set({ count: 0, lastTappedAt: firebase.firestore.FieldValue.serverTimestamp() });
